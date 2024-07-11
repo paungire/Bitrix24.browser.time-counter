@@ -3,16 +3,17 @@
 	"name": "Гриса делает расширение",
 	"description": "расширение",
 	"version": "1.0",
-	"action": {},
+	"action": {
+		"default_popup": "popup.html"
+	},
 	"content_scripts": [
 		{
-			"js": ["scripts/content.js"],
+			"css": ["scripts/content.css", "modules/vanilla-calendar.min.css"],
+			"js": ["modules/vanilla-calendar.min.js", "scripts/content.js"],
 			"matches": ["https://upfly.bitrix24.ru/*"],
 			"all_frames": true
 		}
 	],
-	"background": {
-		"service_worker": "background.js"
-	},
+
 	"permissions": ["activeTab", "scripting", "tabs"]
 }

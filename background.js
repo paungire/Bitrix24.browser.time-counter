@@ -8,7 +8,7 @@ function getCurrentTab(callback) {
 }
 const upflyb24 = "https://upfly.bitrix24.ru/";
 
-chrome.runtime.onInstalled.addListener(async () => {
+chrome.runtime.onInstalled.addListener(() => {
 	chrome.action.setBadgeText({
 		text: "OFF",
 	});
@@ -28,7 +28,7 @@ chrome.runtime.onInstalled.addListener(async () => {
 	});
 });
 
-chrome.tabs.onActivated.addListener((tab) => {
+chrome.tabs.onActivated.addListener(() => {
 	getCurrentTab((tab) => {
 		if (tab.url.startsWith(upflyb24)) {
 			chrome.action.enable();
