@@ -32,12 +32,53 @@ document.querySelector("#task-time-switcher").addEventListener(
 		const options = {
 			actions: {
 				clickDay(event, self) {
-					console.log(self.selectedDates);
-					// 
-					arrayTimes.filter((e) => {
-						let day = dataConvert(new Date(e.start.split(" ")[0]));
-
+					//фильтр по дням
+					let filterDate = Date.parse(self.selectedDates[0]);
+					let filtredArray = arrayTimes.filter((e) => {
+						let dateArr = e.start.split(" ")[0].split(".");
+						let newDateFormatStart = new Date(
+							dateArr[2] +
+								"-" +
+								dateArr[1] +
+								"-" +
+								dateArr[0] +
+								" " +
+								e.start.split(" ")[1]
+						);
+						if (
+							Math.trunc(newDateFormatStart.getTime() / 1000 / 60 / 60 / 24) ===
+							Math.trunc(filterDate / 1000 / 60 / 60 / 24)
+						) {
+							return e;
+						}
 					});
+
+					let preFinalArr = [];
+					filtredArray.forEach((el) => {
+						let timeArr = el.time.split(":");
+						preFinalArr[el.author] =
+							(preFinalArr[el.author] ?? 0) +
+							parseInt(timeArr[0]) * 60 * 60 +
+							parseInt(timeArr[1]) * 60 +
+							parseInt(timeArr[2]);
+					});
+
+					console.log(preFinalArr);
+
+					let finalArr = [];
+					for (const key in preFinalArr) {
+						if (Object.hasOwnProperty.call(object, key)) {
+							const val = preFinalArr[key];
+
+							let sec = (val % 60).padStart(2, "0");
+							let min = (parseInt(val / 60) % 60).padStart(2, "0");
+							let hour = parseInt(parseInt(val / 60) / 60).padStart(2, "0");
+
+							finalArr[key] = `${hour}:${min}:${sec}`;
+						}
+					}
+
+					console.log(finalArr);
 					// let list = document.createElement("div");
 					// list.id = "list";
 
@@ -52,17 +93,3 @@ document.querySelector("#task-time-switcher").addEventListener(
 	},
 	{ once: true }
 );
-
-function dataConvert(date) {
-	var d = new Date(date),
-		month = '' + (d.getMonth() + 1),
-		day = '' + d.getDate(),
-		year = d.getFullYear();
-
-	if (month.length < 2)
-		month = '0' + month;
-	if (day.length < 2)
-		day = '0' + day;
-
-	return [year, month, day].join('-');
-}
