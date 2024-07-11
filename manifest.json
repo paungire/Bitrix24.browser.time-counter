@@ -1,0 +1,18 @@
+{
+	"manifest_version": 3,
+	"name": "Гриса делает расширение",
+	"description": "расширение",
+	"version": "1.0",
+	"action": {},
+	"content_scripts": [
+		{
+			"js": ["scripts/content.js"],
+			"matches": ["https://upfly.bitrix24.ru/*"],
+			"all_frames": true
+		}
+	],
+	"background": {
+		"service_worker": "background.js"
+	},
+	"permissions": ["activeTab", "scripting", "tabs"]
+}
