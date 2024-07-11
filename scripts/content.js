@@ -33,16 +33,10 @@ document.querySelector("#task-time-switcher").addEventListener(
 			actions: {
 				clickDay(event, self) {
 					console.log(self.selectedDates);
-
+					// 
 					arrayTimes.filter((e) => {
-						let day = new Date(e.start.split(" ")[0]);
-						console.log(
-							day.getFullYear() +
-								"-" +
-								String(day.getMonth()).padStart(2, "0") +
-								"-" +
-								String(day.getDate()).padStart(2, "0")
-						);
+						let day = dataConvert(new Date(e.start.split(" ")[0]));
+
 					});
 					// let list = document.createElement("div");
 					// list.id = "list";
@@ -58,3 +52,17 @@ document.querySelector("#task-time-switcher").addEventListener(
 	},
 	{ once: true }
 );
+
+function dataConvert(date) {
+	var d = new Date(date),
+		month = '' + (d.getMonth() + 1),
+		day = '' + d.getDate(),
+		year = d.getFullYear();
+
+	if (month.length < 2)
+		month = '0' + month;
+	if (day.length < 2)
+		day = '0' + day;
+
+	return [year, month, day].join('-');
+}
