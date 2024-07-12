@@ -177,6 +177,6 @@ li {
 	cursor: pointer;
 }
 
-.logoMain {
-	font-size: xx-large;
+.logoMain img {
+	width: 50px;
 }
