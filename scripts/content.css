@@ -108,7 +108,7 @@ li {
 
 .layer {
 	width: 100%;
-	background-color: #f8ebfc;
+	background-color: #ebfcef;
 	transition: 0.3s ease all;
 	z-index: 1;
 }
@@ -137,7 +137,7 @@ li {
 }
 
 #button-1 .checkbox:checked ~ .layer {
-	background-color: #ebf1fc;
+	background-color: #ebfcef;
 }
 
 #button-1 .knobs,
