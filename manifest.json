@@ -1,14 +1,18 @@
 {
 	"manifest_version": 3,
-	"name": "Гриса делает расширение",
+	"name": "Учет времени bitrix24",
 	"description": "расширение",
 	"version": "1.0",
-	"action": {
-		"default_popup": "popup.html"
+	"action": {},
+	"icons": {
+		"16": "logo.png",
+		"32": "logo.png",
+		"48": "logo.png",
+		"128": "logo.png"
 	},
 	"content_scripts": [
 		{
-			"css": ["scripts/content.css", "modules/vanilla-calendar.min.css"],
+			"css": ["modules/vanilla-calendar.min.css", "scripts/content.css"],
 			"js": ["modules/vanilla-calendar.min.js", "scripts/content.js"],
 			"matches": ["https://upfly.bitrix24.ru/*"],
 			"all_frames": true
