@@ -1,0 +1,3 @@
+for safari:
+cd [safari extension]
+xcrun safari-web-extension-converter [chrome extension] --macos-only
