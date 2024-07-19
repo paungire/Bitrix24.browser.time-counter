@@ -62,11 +62,9 @@ document.querySelector("#task-time-switcher").addEventListener(
 		input.classList.add("checkbox");
 		input.addEventListener("click", (e) => {
 			if (e.target.checked) {
-				console.log("multy");
 				calendarOneDay.classList.add("d-none");
 				calendarInterval.classList.remove("d-none");
 			} else {
-				console.log("day");
 				calendarOneDay.classList.remove("d-none");
 				calendarInterval.classList.add("d-none");
 			}
@@ -119,14 +117,16 @@ document.querySelector("#task-time-switcher").addEventListener(
 						let timeCount = 0;
 						filtredArray.forEach((el) => {
 							let time = el.time.split(":").map(el => Number(el));
-							objUser[el.author] = {};
+							if (!Object.hasOwn(objUser, [el.author])) {
+								objUser[el.author] = { time: 0 };
+							}
+							// objUser[el.author] = {};
 							let step = ((Number(time[0]) * 60 * 60) + Number(time[1] * 60) + time[2]);
 							timeCount += step
 							objUser[el.author]["time"] = timeCount;
 							totalTime += step;
 						});
 					}
-
 
 					if (filtredManualArray.length) {
 						let timeCount = 0;
@@ -194,7 +194,6 @@ document.querySelector("#task-time-switcher").addEventListener(
 						item.append(name);
 						item.append(time);
 						listDOM.append(item);
-
 					}
 					list.innerHTML = listDOM.innerHTML;
 				},
@@ -206,10 +205,7 @@ document.querySelector("#task-time-switcher").addEventListener(
 				},
 			},
 		};
-		const calendarOneDayIo = new VanillaCalendar(
-			"#calendarOneDay",
-			optionsOneDay
-		);
+		const calendarOneDayIo = new VanillaCalendar("#calendarOneDay", optionsOneDay);
 		calendarOneDayIo.init();
 
 		// инициализация календаря с выбором промежутка
@@ -225,80 +221,108 @@ document.querySelector("#task-time-switcher").addEventListener(
 			},
 			actions: {
 				clickDay(event, self) {
-					if (
-						self.selectedDates[0] != undefined &&
-						self.selectedDates.length > 1
-					) {
+					if (self.selectedDates[0] != undefined && self.selectedDates.length > 1) {
 						//фильтр по дням
 						let filterDateArr = [];
 						self.selectedDates.forEach((e) => {
-							filterDateArr.push(
-								Math.trunc(Date.parse(e) / 1000 / 60 / 60 / 24)
-							);
+							filterDateArr.push(Math.trunc(Date.parse(e) / 1000 / 60 / 60 / 24));
 						});
+
 						let filtredArray = arrayTimes.filter((e) => {
 							let dateArr = e.start.split(" ")[0].split(".");
-							let newDateFormatStart = new Date(
-								dateArr[2] +
-								"-" +
-								dateArr[1] +
-								"-" +
-								dateArr[0] +
-								" " +
-								e.start.split(" ")[1]
-							);
-							if (
-								filterDateArr.indexOf(
-									Math.trunc(newDateFormatStart.getTime() / 1000 / 60 / 60 / 24)
-								) !== -1
-							) {
-								return e;
-							}
+							let newDateFormatStart = new Date(dateArr[2] + "-" + dateArr[1] + "-" + dateArr[0] + " " + e.start.split(" ")[1]);
+							if (filterDateArr.indexOf(Math.trunc(newDateFormatStart.getTime() / 1000 / 60 / 60 / 24)) !== -1) return e;
 						});
-						let preFinalArr = [];
-						filtredArray.forEach((el) => {
-							let timeArr = el.time.split(":");
-							preFinalArr[el.author] =
-								(preFinalArr[el.author] ?? 0) +
-								parseInt(timeArr[0]) * 60 * 60 +
-								parseInt(timeArr[1]) * 60 +
-								parseInt(timeArr[2]);
+
+						let filtredManualArray = manualTimes.filter((e) => {
+							let dateArr = e.start.split(" ")[0].split(".");
+							let newDateFormatStart = new Date(dateArr[2] + "-" + dateArr[1] + "-" + dateArr[0] + " " + e.start.split(" ")[1]);
+							if (filterDateArr.indexOf(Math.trunc(newDateFormatStart.getTime() / 1000 / 60 / 60 / 24)) !== -1) return e;
 						});
-						let finalArr = [];
-						for (const key in preFinalArr) {
-							const val = preFinalArr[key];
 
-							let sec = val % 60;
-							let min = parseInt(val / 60) % 60;
-							let hour = parseInt(parseInt(val / 60) / 60);
-
-							finalArr.push({
-								name: key,
-								time: `${String(hour).padStart(2, "0")}:${String(min).padStart(
-									2,
-									"0"
-								)}:${String(sec).padStart(2, "0")}`,
+						const objUser = {};
+						let totalTime = 0;
+						let totalManualTime = 0
+						if (filtredArray.length) {
+							let timeCount = 0;
+							filtredArray.forEach((el) => {
+								let time = el.time.split(":").map(el => Number(el));
+								if (!Object.hasOwn(objUser, [el.author])) {
+									objUser[el.author] = { time: 0 };
+								}
+								timeCount += ((Number(time[0]) * 60 * 60) + Number(time[1] * 60) + time[2]);
+								objUser[el.author]["time"] += ((Number(time[0]) * 60 * 60) + Number(time[1] * 60) + time[2]);
+								totalTime += ((Number(time[0]) * 60 * 60) + Number(time[1] * 60) + time[2]);
 							});
-						} //? return finalArr
+						}
 
-						let newList = document.createElement("ul");
+						if (filtredManualArray.length) {
+							let timeCount = 0;
+							filtredManualArray.forEach((el) => {
+								let time = el.time.split(":").map(el => Number(el));
+								if (!Object.hasOwn(objUser, [el.author])) {
+									objUser[el.author] = {};
+								}
+								let step = ((Number(time[0]) * 60 * 60) + Number(time[1] * 60) + time[2]);
+								timeCount += step;
+								objUser[el.author]["manual"] = timeCount;
+								totalManualTime += step;
+							});
+						}
 
-						finalArr.forEach((el) => {
-							let element = document.createElement("li");
+						let renderArr = [];
+						for (const key in objUser) {
+							const val = objUser[key];
+							const [sec, min, hour] = getSecMinHour(val.time);
+							const [secManual, minManual, hourManual] = getSecMinHour(val.manual)
 
-							let name = document.createElement("span");
+							let strTime = "0";
+							if (hour || min || sec) strTime = convertToString(sec, min, hour);
+
+							let strManualTime = "";
+							if (hourManual || minManual || secManual) strManualTime = '(+' + convertToString(secManual, minManual, hourManual) + ')';
+
+							renderArr.push({
+								name: key,
+								time: strTime,
+								manualTime: strManualTime,
+							});
+						}
+
+						const listDOM = document.createElement("ul");
+						renderArr.forEach((el) => {
+							const item = document.createElement("li");
+							const name = document.createElement("span");
 							name.innerText = el.name;
-							let time = document.createElement("span");
+							const time = document.createElement("span");
+							if (el.manualTime) {
+								time.innerText = el.time + " " + el.manualTime;
+							}
+							else {
+								time.innerText = el.time;
+							}
 							time.classList.add("time");
-							time.innerText = el.time;
-
-							element.append(name);
-							element.append(time);
-
-							newList.append(element);
+							item.append(name);
+							item.append(time);
+							listDOM.append(item);
 						});
-
-						list.innerHTML = newList.innerHTML;
+						if (filtredManualArray.length || filtredArray.length) {
+							const item = document.createElement("li");
+							const name = document.createElement("span");
+							name.innerText = "Всего:";
+							const time = document.createElement("span");
+							if (totalManualTime) {
+								time.innerText = convertToString(...getSecMinHour(totalTime)) + " (+" + convertToString(...getSecMinHour(totalManualTime)) + ")";
+							}
+							else {
+								time.innerText = convertToString(...getSecMinHour(totalTime));
+							}
+							time.classList.add("time");
+							item.append(name);
+							item.append(time);
+							listDOM.append(item);
+						}
+						list.innerHTML = listDOM.innerHTML;
 					}
 				},
 			},
@@ -336,7 +360,6 @@ function filterArrayByDay(arr, date) {
 		}
 	});
 }
-
 
 function convertToString(sec, min, hour) {
 	return `${String(hour).padStart(2, "0")}:${String(min).padStart(2, "0")}:${String(sec).padStart(2, "0")}`
